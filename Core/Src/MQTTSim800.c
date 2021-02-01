@@ -144,6 +144,8 @@ int SIM800_SendCommand(char *command, char *reply, uint16_t delay) {
         return 0;
     }
     clearRxBuffer();
+
+    printf("Failed! %s \n", mqtt_buffer);
     return 1;
 }
 
