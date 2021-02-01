@@ -18,18 +18,20 @@
   */
 /* USER CODE END Header */
 /* Includes ------------------------------------------------------------------*/
-#include <stdlib.h>
 #include "main.h"
 #include "usart.h"
 #include "gpio.h"
-#include "stdio.h"
 
-#include <errno.h>
-#include <sys/unistd.h>// STDOUT_FILENO, STDERR_FILENO
 
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
 #include "MQTTSim800.h"
+
+#include <stdlib.h>
+#include "stdio.h"
+#include <errno.h>
+#include <sys/unistd.h>// STDOUT_FILENO, STDERR_FILENO
+
 
 /* USER CODE END Includes */
 
@@ -49,8 +51,6 @@
 
 /* Private variables ---------------------------------------------------------*/
 
-#pragma clang diagnostic push
-#pragma ide diagnostic ignored "EndlessLoop"
 /* USER CODE BEGIN PV */
 SIM800_t SIM800;
 /* USER CODE END PV */
@@ -80,11 +80,14 @@ int _write(int file, char *data, int len) {
 /* USER CODE BEGIN 0 */
 void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart) {
     if (huart == UART_SIM800) {
-        printf("new msg");
+//        printf("new msg");
         Sim800_RxCallBack();
     }
 }
 /* USER CODE END 0 */
+
+#pragma clang diagnostic push
+#pragma ide diagnostic ignored "EndlessLoop"
 
 /**
   * @brief  The application entry point.
@@ -126,6 +129,8 @@ int main(void) {
     SIM800.mqttClient.keepAliveInterval = 120;
     MQTT_Init();
     uint8_t sub = 0;
+
+    printf("Starting...\n");
     /* USER CODE END 2 */
 
     /* Infinite loop */
@@ -137,11 +142,11 @@ int main(void) {
 //	    HAL_UART_Transmit_IT(&huart1, &rx_data, 1);
         if (SIM800.mqttServer.connect == 0) {
             MQTT_Init();
-            printf("NOT CONNECTED");
+            printf("NOT CONNECTED\n");
             sub = 0;
         }
         if (SIM800.mqttServer.connect == 1) {
-            printf("CONNECTED");
+            printf("CONNECTED\n");
             if (sub == 0) {
                 MQTT_Sub("test");
 
@@ -159,6 +164,8 @@ int main(void) {
     }
     /* USER CODE END 3 */
 }
+
+#pragma clang diagnostic pop
 
 /**
   * @brief System Clock Configuration
@@ -227,5 +234,3 @@ void assert_failed(uint8_t *file, uint32_t line)
 #endif /* USE_FULL_ASSERT */
 
 /************************ (C) COPYRIGHT STMicroelectronics *****END OF FILE****/
-
-#pragma clang diagnostic pop

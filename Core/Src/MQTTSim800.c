@@ -129,6 +129,7 @@ void clearMqttBuffer(void) {
  * @return error, 0 is OK
  */
 int SIM800_SendCommand(char *command, char *reply, uint16_t delay) {
+    printf("sending --- %s\n", command);
     HAL_UART_Transmit_IT(UART_SIM800, (unsigned char *) command,
                          (uint16_t) strlen(command));
 
@@ -154,7 +155,7 @@ int SIM800_SendCommand(char *command, char *reply, uint16_t delay) {
 int MQTT_Init(void) {
     SIM800.mqttServer.connect = 0;
     int error = 0;
-    char str[32] = {0};
+    char str[64] = {0};
     HAL_UART_Receive_IT(UART_SIM800, &rx_data, 1);
 
 
@@ -165,7 +166,7 @@ int MQTT_Init(void) {
     //  error += SIM800_SendCommand("AT+CIPMODE=1\r\n", "OK\r\n", CMD_DELAY);
     error += SIM800_SendCommand("AT+SAPBR=3,1,\"CONTYPE\",\"GPRS\"\r\n", "OK\r\n", CMD_DELAY);
     //  error += SIM800_SendCommand("AT+SAPBR=3,1, \"APN\",\""+APN+"\"", "OK\r\n", CMD_DELAY);
-    snprintf(str, sizeof(str), "AT+SAPBR=3,1\"%s\",\"%s\",\"%s\"\r\n", SIM800.sim.apn, SIM800.sim.apn_user,
+    snprintf(str, sizeof(str), "AT+SAPBR=3,1,\"%s\",\"%s\",\"%s\"\r\n", SIM800.sim.apn, SIM800.sim.apn_user,
              SIM800.sim.apn_pass);
     error += SIM800_SendCommand(str, "OK\r\n", CMD_DELAY);
 
@@ -173,11 +174,11 @@ int MQTT_Init(void) {
 
     error += SIM800_SendCommand("AT+CIPSSL=1\r\n", "OK\r\n", CMD_DELAY);
     if (error == 0) {
-        printf("GPRS OK");
+        printf("GPRS OK\n");
         MQTT_Connect();
         return error;
     } else {
-        printf("GPRS ERROR");
+        printf("GPRS ERROR\n");
         return error;
     }
 }
